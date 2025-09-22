@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="og:title" content="Stroke Prediction System">
+  <meta name="author" content="Venkata Sreeram">
+  <meta name="og:image" content="static/logo1.png">
+  <meta name="Keywords" content="Flask, Machine Learning, Deep Learning, Artificial Intelligence, AI, ML, DL, Web Development">
+  <meta name="description" content="A Machine Learning and Deep Learning based webapp for Multiple Disease Prediction.">
+  <title>Stroke Prediction System</title>
+  <link rel="icon" href="{{ url_for('static', filename = 'logo1.png') }}" type="image/icon type">
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  
+  <style>
+    :root {
+      --primary-color: #1a237e;
+      --secondary-color: #00acc1;
+      --accent-color: #ff4081;
+      --light-color: #f5f5f5;
+      --dark-color: #212121;
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --danger-color: #f44336;
+    }
+    
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://img.freepik.com/premium-vector/emergency-ekg-monitoring-blue-glowing-neon-heart-pulse-heart-beat-electrocardiogram_322958-842.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: var(--light-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+      background-color: var(--primary-color) !important;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+      padding: 0.8rem 1rem;
+    }
+    
+    .navbar-brand {
+      font-weight: 600;
+      letter-spacing: 1px;
+      font-size: 1.3rem;
+    }
+    
+    .nav-link {
+      font-weight: 500;
+      margin: 0 10px;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .nav-item.active .nav-link {
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+    
+    .main-container {
+      margin-top: 100px;
+      margin-bottom: 50px;
+    }
+    
+    .card-form {
+      background-color: rgba(26, 35, 126, 0.85);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      border: none;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(8px);
+    }
+    
+    .card-form:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+    
+    .form-header {
+      text-align: center;
+      padding: 25px 0;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .form-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://cdn-icons-png.flaticon.com/512/3359/3359081.png') center/contain no-repeat;
+      opacity: 0.1;
+    }
+    
+    .form-icon {
+      width: 80px;
+      height: 80px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .form-icon img {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .form-title {
+      font-weight: 700;
+      margin-bottom: 5px;
+      font-size: 2rem;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .form-subtitle {
+      font-weight: 400;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .form-control {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      height: 45px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      padding-left: 15px;
+    }
+    
+    .form-control:focus {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: var(--secondary-color);
+      color: white;
+      box-shadow: 0 0 0 0.2rem rgba(0, 172, 193, 0.25);
+    }
+    
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    select.form-control {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 16px 12px;
+    }
+    
+    label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
+      color: var(--light-color);
+    }
+    
+    .btn-predict {
+      background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-weight: 600;
+      border-radius: 8px;
+      width: 100%;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-predict:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+    }
+    
+    .btn-predict:active {
+      transform: translateY(1px);
+    }
+    
+    .input-group-prepend .input-group-text {
+      background-color: rgba(0, 172, 193, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      border-radius: 8px 0 0 8px;
+    }   
+
+    @media (max-width: 768px) {
+      .main-container {
+        margin-top: 80px;
+      }
+      
+      .form-title {
+        font-size: 1.8rem;
+      }
+      
+      .form-icon {
+        width: 70px;
+        height: 70px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .navbar-brand {
+        font-size: 1.1rem;
+      }
+      
+      .nav-link {
+        padding: 0.4rem 0.8rem;
+        margin: 0 5px;
+      }
+      
+      .form-title {
+        font-size: 1.5rem;
+      }
+      
+      .form-subtitle {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('home') }}">
+        <i class="fas fa-heartbeat mr-2"></i>Stroke Prediction
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{{ url_for('fetalPage') }}">
+              <i class="fas fa-heartbeat mr-1"></i> Prediction
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('history') }}">
+              <i class="fas fa-history mr-1"></i> History
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('profile') }}">
+              <i class="fas fa-user-circle mr-1"></i> Profile
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">
+              <i class="fas fa-sign-out-alt mr-1"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-container animate__animated animate__fadeIn">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="card card-form pulse-animation">
+            <div class="form-header">
+              <div class="form-icon floating">
+                <img src="https://cdn-icons-png.flaticon.com/512/3359/3359081.png" alt="Heart Icon">
+              </div>
+              <h1 class="form-title">Stroke Prediction System</h1>
+              <p class="form-subtitle">Enter your health parameters for analysis</p>
+            </div>
+            
+            <div class="card-body">
+              <form class="form-horizontal" action="{{ url_for('predictPage') }}" method="POST">
+                <div class="row">
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-user mr-2"></i><b>Name</b></label>
+                    <div class="form-group">
+                      <input class="form-control" type="text" name="name" value="{{name}}" required>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-birthday-cake mr-2"></i><b>Age</b></label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input class="form-control" type="number" name="age" placeholder="Enter age" required>
+                        <div class="input-group-append">
+                          <span class="input-group-text">years</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-venus-mars mr-2"></i><b>Gender</b></label>
+                    <div class="form-group">
+                      <select name="Gender" id="Gender" class="form-control">
+                        <option value="0"><i class="fas fa-male"></i> Male</option>
+                        <option value="1"><i class="fas fa-female"></i> Female</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-ruler-vertical mr-2"></i><b>Height</b></label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input class="form-control" type="number" name="height" required placeholder="Enter height">
+                        <div class="input-group-append">
+                          <span class="input-group-text">cm</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-weight mr-2"></i><b>Weight</b></label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input class="form-control" type="number" name="Weight" required placeholder="Enter weight">
+                        <div class="input-group-append">
+                          <span class="input-group-text">kg</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-medal mr-2"></i><b>Stroke History</b></label>
+                    <div class="form-group">
+                      <select name="his" id="his" class="form-control">
+                        <option value="0" style="color: black;"><i class="fas fa-times-circle"></i> No</option>
+                        <option value="1"  style="color: black;"><i class="fas fa-check-circle"></i> Yes</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-heartbeat mr-2"></i><b>ECG Value</b></label>
+                    <div class="form-group">
+                      <input class="form-control" type="number" name="ECG" value="{{ecg}}" required>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-heart mr-2"></i><b>Heart Rate</b></label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input class="form-control" type="number" name="Heart_Rate" value="{{hb}}" required>
+                        <div class="input-group-append">
+                          <span class="input-group-text">bpm</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4 mb-4">
+                    <label><i class="fas fa-thermometer-half mr-2"></i><b>Temperature</b></label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input class="form-control" type="number" name="Temperature" value="{{temp}}" required>
+                        <div class="input-group-append">
+                          <span class="input-group-text">°C</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <button type="submit" class="btn btn-predict">
+                  <i class="fas fa-chart-line mr-2"></i> Predict Stroke Risk
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- jQuery, Popper.js, Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>

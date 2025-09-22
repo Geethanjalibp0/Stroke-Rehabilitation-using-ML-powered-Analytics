@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="og:title" content="Stroke Prediction System">
+  <meta name="author" content="Venkata Sreeram">
+  <meta name="og:image" content="static/logo1.png">
+  <meta name="Keywords" content="Flask, Machine Learning, Deep Learning, Artificial Intelligence, AI, ML, DL, Web Development">
+  <meta name="description" content="A Machine Learning and Deep Learning based webapp for Multiple Disease Prediction.">
+  <title>Stroke Prediction System</title>
+  <link rel="icon" href="{{ url_for('static', filename = 'logo1.png') }}" type="image/icon type">
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
+  
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --dark-color: #2c3e50;
+    }
+    
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url("https://i.makeagif.com/media/6-03-2022/OMKpEg.gif");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: var(--light-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+      background-color: var(--primary-color) !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .navbar-brand {
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    
+    .nav-link {
+      font-weight: 500;
+      margin: 0 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: var(--secondary-color) !important;
+    }
+    
+    .auth-container {
+      max-width: 500px;
+      margin: 100px auto;
+      padding: 30px;
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .auth-container:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .auth-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--light-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: var(--primary-color);
+      font-size: 2rem;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .auth-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: white;
+    }
+    
+    .form-control {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      height: 45px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: var(--secondary-color);
+      color: white;
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .btn-submit {
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      font-weight: 500;
+      border-radius: 5px;
+      width: 100%;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+    
+    .btn-submit:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+    
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .auth-link {
+      color: var(--secondary-color);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .auth-link:hover {
+      color: #2980b9;
+      text-decoration: none;
+    }
+    
+    #home, #form1, #form2, #form3, #form4 {
+      display: none;
+    }
+    
+    #home.active, #form1.active, #form2.active, #form3.active, #form4.active {
+      display: block;
+    }
+    
+    .alert-message {
+      max-width: 500px;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('home') }}">
+        <i class="fas fa-heartbeat mr-2"></i>Stroke Prediction System
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a href="{{ url_for('home') }}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-user"></i>User</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-value="#form3" onclick="toggleform(event)"> <i class="fas fa-user"></i> Admin</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    {% if msg %}
+    <div class="alert alert-info alert-message text-center">
+      {{ msg }}
+    </div>
+    {% endif %}
+    
+    <!-- User Login Form -->
+    <form method="post" action="{{ url_for('userlog')}}" id="form1" class="active">
+      <div class="auth-container">
+        <div class="auth-header">
+          <div class="auth-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <h2 class="auth-title">User Login</h2>
+          <p>Access your account to check your health status</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" placeholder="Enter your username" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Enter your password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-submit">Login</button>
+        
+        <div class="auth-footer">
+          Don't have an account? <span class="auth-link" data-value="#form2" onclick="toggleform(event)">Sign up here</span>
+        </div>
+      </div>
+    </form>
+    
+    <!-- User Registration Form -->
+    <form method="post" action="{{ url_for('userreg')}}" id="form2">
+      <div class="auth-container">
+        <div class="auth-header">
+          <div class="auth-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h2 class="auth-title">User Registration</h2>
+          <p>Create an account to monitor your health</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" placeholder="Choose a username" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" class="form-control" id="email" placeholder="Enter your email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Mobile Number</label>
+          <input type="tel" class="form-control" id="phone" placeholder="Enter mobile number" name="phone" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Create a password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-submit">Register</button>
+        
+        <div class="auth-footer">
+          Already have an account? <span class="auth-link" data-value="#form1" onclick="toggleform(event)">Sign in here</span>
+        </div>
+      </div>
+    </form>
+    
+    <!-- Admin Login Form -->
+    <form method="post" action="{{ url_for('adminlog')}}" id="form3">
+      <div class="auth-container">
+        <div class="auth-header">
+          <div class="auth-icon">
+            <i class="fas fa-lock"></i>
+          </div>
+          <h2 class="auth-title">Admin Login</h2>
+          <p>Access the administrator dashboard</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="username">Admin Username</label>
+          <input type="text" class="form-control" id="username" placeholder="Enter admin username" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Enter admin password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-submit">Login</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- jQuery, Popper.js, Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  
+  <script>
+    function toggleform(e) {
+      var Id = e.target.getAttribute('data-value');
+      let Items = ['#form1', '#form2', '#form3'];
+      
+      Items.forEach(function(item) {
+        if(Id === item) {
+          $(item).addClass("active");
+        } else {
+          $(item).removeClass("active");
+        }
+      });
+    }
+    
+    // Add smooth scrolling to all links
+    $(document).ready(function(){
+      $("a").on('click', function(event) {
+        if (this.hash !== "") {
+          event.preventDefault();
+          var hash = this.hash;
+          $('html, body').animate({
+            scrollTop: $(hash).offset().top
+          }, 800, function(){
+            window.location.hash = hash;
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
